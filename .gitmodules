@@ -1,0 +1,3 @@
+[submodule "libremodbus-dist"]
+	path = libremodbus-dist
+	url = https://github.com/nucleron/libremodbus.git
