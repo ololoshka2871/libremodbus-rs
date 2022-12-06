@@ -8,6 +8,9 @@ pub struct Rtu {
     inst: mb_inst_struct,
     transport: mb_rtu_tr_struct,
     port_obj: mb_port_base_struct,
+
+    slave_addr: u8,
+    boudrate: u32,
 }
 
 unsafe impl Send for Rtu {}
@@ -19,41 +22,41 @@ impl Rtu {
         boudrate: u32,
         timer: *mut dyn super::TimerInterface,
     ) -> Self {
-        let mut res = unsafe {
-            Self {
-                inst: core::mem::MaybeUninit::zeroed().assume_init(),
-                transport: core::mem::MaybeUninit::zeroed().assume_init(),
-                port_obj: core::mem::MaybeUninit::zeroed().assume_init(),
-            }
-        };
-
         unsafe {
             super::PORT.replace(port.to_raw_parts());
             super::TIMER.replace(timer.to_raw_parts());
         }
 
-        //let p = (&res as &dyn super::StaticDispatcher) as *const _;
-        //res.inst.transport = &mut res as *mut Self as *mut crate::bindings::mb_trans_base_struct;
-        let err = unsafe {
-            mb_init_rtu(
-                &mut res.inst,
-                &mut res.transport,
+        unsafe {
+            Self {
+                inst: core::mem::MaybeUninit::zeroed().assume_init(),
+                transport: core::mem::MaybeUninit::zeroed().assume_init(),
+                port_obj: core::mem::MaybeUninit::zeroed().assume_init(),
+
                 slave_addr,
-                &mut res.port_obj,
                 boudrate,
-                mb_port_ser_parity_enum_MB_PAR_NONE,
-            )
-        };
-
-        assert!(err == mb_err_enum_MB_ENOERR);
-
-        res
+            }
+        }
     }
 }
 
 impl super::MBInterface for Rtu {
     fn enable(&mut self) -> bool {
-        unsafe { mb_enable(&mut self.inst) == mb_err_enum_MB_ENOERR }
+        unsafe {
+            if mb_init_rtu(
+                &mut self.inst,
+                &mut self.transport,
+                self.slave_addr,
+                &mut self.port_obj,
+                self.boudrate,
+                mb_port_ser_parity_enum_MB_PAR_NONE,
+            ) != mb_err_enum_MB_ENOERR
+            {
+                return false;
+            }
+
+            mb_enable(&mut self.inst) == mb_err_enum_MB_ENOERR
+        }
     }
 
     fn disable(&mut self) {
