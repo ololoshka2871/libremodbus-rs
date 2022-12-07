@@ -21,10 +21,12 @@ impl Rtu {
         port: *mut dyn super::SerialInterface,
         boudrate: u32,
         timer: *mut dyn super::TimerInterface,
+        data: *mut dyn super::DataInterface,
     ) -> Self {
         unsafe {
             super::PORT.replace(port.to_raw_parts());
             super::TIMER.replace(timer.to_raw_parts());
+            super::DATA.replace(data.to_raw_parts());
         }
 
         unsafe {
