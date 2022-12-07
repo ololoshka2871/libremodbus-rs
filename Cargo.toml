@@ -16,6 +16,11 @@ cc = { version = "1.0", features = ["parallel"] }
 [dev-dependencies]
 
 [features]
-default = ["rtu"]
+default = ["rtu", "holdings", "inputs", "coils", "d_inputs"]
 rtu = []
 ascii = []
+# tcp =[] todo
+holdings = []
+inputs = []
+coils = []
+d_inputs = []

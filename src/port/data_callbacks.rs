@@ -9,6 +9,7 @@ fn get_data_interface() -> &'static mut dyn crate::DataInterface {
     }
 }
 
+#[cfg(feature = "inputs")]
 #[no_mangle]
 pub extern "C" fn mb_reg_input_cb(
     _inst: *mut mb_inst_struct,
@@ -28,6 +29,8 @@ pub extern "C" fn mb_reg_input_cb(
         reg_num,
     ) as mb_err_enum
 }
+
+#[cfg(feature="holdings")]
 #[no_mangle]
 pub extern "C" fn mb_reg_holding_cb(
     _inst: *mut mb_inst_struct,
@@ -49,6 +52,8 @@ pub extern "C" fn mb_reg_holding_cb(
         mode.into(),
     ) as mb_err_enum
 }
+
+#[cfg(feature="coils")]
 #[no_mangle]
 pub extern "C" fn mb_reg_coils_cb(
     _inst: *mut mb_inst_struct,
@@ -70,6 +75,8 @@ pub extern "C" fn mb_reg_coils_cb(
         mode.into(),
     ) as mb_err_enum
 }
+
+#[cfg(feature = "d_inputs")]
 #[no_mangle]
 pub extern "C" fn mb_reg_discrete_cb(
     _inst: *mut mb_inst_struct,

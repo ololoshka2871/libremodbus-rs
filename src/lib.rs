@@ -92,23 +92,32 @@ pub trait TimerInterface {
     fn wait(&mut self);
 }
 
+#[allow(unused_variables)]
 pub trait DataInterface {
-    fn read_inputs(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError;
+    fn read_inputs(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError {
+        MbError::MB_ENOREG
+    }
     fn rw_holdings(
         &mut self,
         reg_buff: &mut [u8],
         reg_addr: u16,
         reg_num: u16,
         mode: AccessMode,
-    ) -> MbError;
+    ) -> MbError {
+        MbError::MB_ENOREG
+    }
     fn rw_coils(
         &mut self,
         reg_buff: &mut [u8],
         reg_addr: u16,
         reg_num: u16,
         mode: AccessMode,
-    ) -> MbError;
-    fn read_discretes(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError;
+    ) -> MbError {
+        MbError::MB_ENOREG
+    }
+    fn read_discretes(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError {
+        MbError::MB_ENOREG
+    }
 }
 
 use core::ptr::Pointee;

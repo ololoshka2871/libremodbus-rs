@@ -16,9 +16,22 @@ fn generate_config() -> PathBuf {
             "%MB_RTU_ENABLED%",
             if cfg!(feature = "rtu") { "1" } else { "0" },
         )
+        /*
         .replace(
             "%MB_TCP_ENABLED%",
             if cfg!(feature = "tcp") { "1" } else { "0" },
+        )*/.replace(
+            "%MB_INPUT_EN%",
+            if cfg!(feature = "inputs") { "1" } else { "0" },
+        ).replace(
+            "%MB_HOLDINGS_EN%",
+            if cfg!(feature = "holdings") { "1" } else { "0" },
+        ).replace(
+            "%MB_COILS_EN%",
+            if cfg!(feature = "coils") { "1" } else { "0" },
+        ).replace(
+            "%MB_DISCRETE_EN%",
+            if cfg!(feature = "d_inputs") { "1" } else { "0" },
         );
 
     let mut out_file = outpath.clone();
@@ -51,9 +64,11 @@ fn main() {
         src.push("libremodbus-dist/ascii/mbascii.c");
     }
 
+    /*
     if cfg!(feature = "tcp") {
         src.push("libremodbus-dist/tcp/mbtcp.c");
     }
+    */
 
     let cfg_dir = generate_config();
 
@@ -71,9 +86,11 @@ fn main() {
         inc.push("libremodbus-dist/ascii");
     }
 
+    /*
     if cfg!(feature = "tcp") {
         inc.push("libremodbus-dist/tcp");
     }
+    */
 
     let mut builder = cc::Build::new();
     let build = builder
