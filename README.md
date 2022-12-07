@@ -61,5 +61,5 @@
 
 
 ## TODO
-[_] Реализовать ModbusASCII
-[_] Реализовать ModbusTCP
+* [_] Реализовать ModbusASCII
+* [_] Реализовать ModbusTCP
