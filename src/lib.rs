@@ -31,7 +31,6 @@ impl From<bindings::mb_port_ser_parity_enum> for Parity {
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MbError {
-    MB_ENOERR = bindings::mb_err_enum_MB_ENOERR,
     MB_ENOREG = bindings::mb_err_enum_MB_ENOREG,
     MB_EINVAL = bindings::mb_err_enum_MB_EINVAL,
     MB_EPORTERR = bindings::mb_err_enum_MB_EPORTERR,
@@ -94,8 +93,13 @@ pub trait TimerInterface {
 
 #[allow(unused_variables)]
 pub trait DataInterface {
-    fn read_inputs(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError {
-        MbError::MB_ENOREG
+    fn read_inputs(
+        &mut self,
+        reg_buff: &mut [u8],
+        reg_addr: u16,
+        reg_num: u16,
+    ) -> Result<(), MbError> {
+        Err(MbError::MB_ENOREG)
     }
     fn rw_holdings(
         &mut self,
@@ -103,8 +107,8 @@ pub trait DataInterface {
         reg_addr: u16,
         reg_num: u16,
         mode: AccessMode,
-    ) -> MbError {
-        MbError::MB_ENOREG
+    ) -> Result<(), MbError> {
+        Err(MbError::MB_ENOREG)
     }
     fn rw_coils(
         &mut self,
@@ -112,11 +116,16 @@ pub trait DataInterface {
         reg_addr: u16,
         reg_num: u16,
         mode: AccessMode,
-    ) -> MbError {
-        MbError::MB_ENOREG
+    ) -> Result<(), MbError> {
+        Err(MbError::MB_ENOREG)
     }
-    fn read_discretes(&mut self, reg_buff: &mut [u8], reg_addr: u16, reg_num: u16) -> MbError {
-        MbError::MB_ENOREG
+    fn read_discretes(
+        &mut self,
+        reg_buff: &mut [u8],
+        reg_addr: u16,
+        reg_num: u16,
+    ) -> Result<(), MbError> {
+        Err(MbError::MB_ENOREG)
     }
 }
 
