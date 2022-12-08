@@ -1,7 +1,7 @@
 use crate::bindings::{
     mb_disable, mb_enable, mb_err_enum_MB_ENOERR, mb_init_rtu, mb_inst_struct, mb_poll,
     mb_port_base_struct, mb_port_ser_parity_enum_MB_PAR_NONE, mb_rtu_rcv_fsm, mb_rtu_snd_fsm,
-    mb_rtu_tmr_35_expired, mb_rtu_tr_struct,
+    mb_rtu_tmr_35_expired, mb_rtu_tr_struct, mb_rtu_snd_state_enum_MB_RTU_TX_STATE_IDLE,
 };
 
 pub struct Rtu {
@@ -87,5 +87,15 @@ impl super::SerialEvent for Rtu {
 impl super::MBTimerEvent for Rtu {
     fn on_timer(&mut self) -> bool {
         unsafe { mb_rtu_tmr_35_expired(&mut self.transport) != 0 }
+    }
+}
+
+impl super::REDEControl for Rtu {
+    fn is_tx_finished(&self) -> bool {
+        (self.transport.snd_state & 0xff) == mb_rtu_snd_state_enum_MB_RTU_TX_STATE_IDLE
+    }
+
+    fn deassert_re_de(&mut self) {
+        crate::port::port_serial::get_serial_interface().deassert_re_de();
     }
 }

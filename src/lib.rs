@@ -74,12 +74,18 @@ pub trait SerialEvent {
     fn on_tx(&mut self) -> bool;
 }
 
+pub trait REDEControl {
+    fn is_tx_finished(&self) -> bool;
+    fn deassert_re_de(&mut self);
+}
+
 pub trait SerialInterface {
     fn configure(&mut self, boud: u32, data_bits: u8, parity: Parity) -> bool;
     fn close(&mut self);
     fn enable(&mut self, rx_enable: bool, tx_enable: bool);
     fn get_byte(&mut self) -> Option<u8>;
     fn put_byte(&mut self, data: u8) -> bool;
+    fn deassert_re_de(&mut self);
 }
 
 pub trait TimerInterface {

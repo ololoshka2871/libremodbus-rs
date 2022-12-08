@@ -3,7 +3,7 @@ use crate::bindings::{
     mb_port_ser_parity_enum, mb_port_ser_struct, BOOL, CHAR, FALSE, TRUE, UCHAR, ULONG,
 };
 
-fn get_serial_interface() -> &'static mut dyn crate::SerialInterface {
+pub(crate) fn get_serial_interface() -> &'static mut dyn crate::SerialInterface {
     unsafe {
         let p = crate::PORT.as_ref().unwrap();
         &mut *core::ptr::from_raw_parts_mut(p.0, p.1)
