@@ -96,7 +96,7 @@ fn main() {
     let build = builder
         .files(src.iter())
         .includes(inc)
-//        .flag("-Wno-unused-parameter")
+        .flag("-Wno-cast-function-type")
 //        .flag("-fno-aggressive-loop-optimizations")
 //        .flag("-Wno-stringop-overflow")
 //        .define("SOME_MACRO", Some("0"))
