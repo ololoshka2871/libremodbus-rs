@@ -140,3 +140,12 @@ use core::ptr::Pointee;
 pub(crate) static mut PORT: Option<(*mut (), <dyn SerialInterface as Pointee>::Metadata)> = None;
 pub(crate) static mut TIMER: Option<(*mut (), <dyn TimerInterface as Pointee>::Metadata)> = None;
 pub(crate) static mut DATA: Option<(*mut (), <dyn DataInterface as Pointee>::Metadata)> = None;
+
+#[cfg(feature = "rtu")]
+pub fn mb_crc16(data: &[u8]) -> u16 {
+    extern "C" {
+        fn mb_crc16(frame_ptr: *const u8, len_buf: u16) -> u16;
+    }
+
+    unsafe { mb_crc16(data.as_ptr(), data.len() as u16) }
+}
