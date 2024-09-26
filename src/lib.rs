@@ -7,9 +7,11 @@ mod port;
 #[cfg(feature = "rtu")]
 mod rtu;
 
+use cortex_m::interrupt::CriticalSection;
 #[cfg(feature = "rtu")]
 pub use rtu::Rtu;
 
+#[derive(Debug, Clone, Copy)]
 #[repr(u32)]
 pub enum Parity {
     None = bindings::mb_port_ser_parity_enum_MB_PAR_NONE,
@@ -28,6 +30,7 @@ impl From<bindings::mb_port_ser_parity_enum> for Parity {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum MbError {
@@ -42,6 +45,7 @@ pub enum MbError {
     MB_EBUSY = bindings::mb_err_enum_MB_EBUSY,
 }
 
+#[derive(Debug, Clone, Copy)]
 #[repr(u32)]
 #[allow(non_camel_case_types)]
 pub enum AccessMode {
@@ -63,6 +67,7 @@ pub trait MBInterface {
     fn enable(&mut self) -> bool;
     fn disable(&mut self);
     fn pool(&mut self);
+    fn reconfigure(&mut self, cs: &CriticalSection, addr: u8, boud: u32, parity: Parity) -> bool;
 }
 
 pub trait MBTimerEvent {

@@ -1,7 +1,7 @@
 use crate::bindings::{
-    mb_disable, mb_enable, mb_err_enum_MB_ENOERR, mb_init_rtu, mb_inst_struct, mb_poll,
-    mb_port_base_struct, mb_port_ser_parity_enum_MB_PAR_NONE, mb_rtu_rcv_fsm, mb_rtu_snd_fsm,
-    mb_rtu_tmr_35_expired, mb_rtu_tr_struct, mb_rtu_snd_state_enum_MB_RTU_TX_STATE_IDLE,
+    mb_close, mb_disable, mb_enable, mb_err_enum_MB_ENOERR, mb_init_rtu, mb_inst_struct, mb_poll,
+    mb_port_base_struct, mb_port_ser_parity_enum, mb_rtu_rcv_fsm, mb_rtu_snd_fsm,
+    mb_rtu_snd_state_enum_MB_RTU_TX_STATE_IDLE, mb_rtu_tmr_35_expired, mb_rtu_tr_struct,
 };
 
 pub struct Rtu {
@@ -11,6 +11,7 @@ pub struct Rtu {
 
     slave_addr: u8,
     boudrate: u32,
+    parity: crate::Parity,
 }
 
 unsafe impl Send for Rtu {}
@@ -20,6 +21,7 @@ impl Rtu {
         slave_addr: u8,
         port: *mut dyn super::SerialInterface,
         boudrate: u32,
+        parity: crate::Parity,
         timer: *mut dyn super::TimerInterface,
         data: *mut dyn super::DataInterface,
     ) -> Self {
@@ -37,6 +39,7 @@ impl Rtu {
 
                 slave_addr,
                 boudrate,
+                parity,
             }
         }
     }
@@ -51,7 +54,7 @@ impl super::MBInterface for Rtu {
                 self.slave_addr,
                 &mut self.port_obj,
                 self.boudrate,
-                mb_port_ser_parity_enum_MB_PAR_NONE,
+                self.parity as mb_port_ser_parity_enum,
             ) != mb_err_enum_MB_ENOERR
             {
                 return false;
@@ -70,6 +73,41 @@ impl super::MBInterface for Rtu {
     fn pool(&mut self) {
         unsafe {
             assert!(mb_poll(&mut self.inst) == mb_err_enum_MB_ENOERR);
+        }
+    }
+
+    fn reconfigure(
+        &mut self,
+        _cs: &cortex_m::interrupt::CriticalSection,
+        addr: u8,
+        boud: u32,
+        parity: crate::Parity,
+    ) -> bool {
+        self.slave_addr = addr;
+        self.boudrate = boud;
+        self.parity = parity;
+
+        unsafe {
+            if mb_disable(&mut self.inst) != mb_err_enum_MB_ENOERR {
+                return false;
+            }
+
+            if mb_close(&mut self.inst) != mb_err_enum_MB_ENOERR {
+                return false;
+            }
+
+            if mb_init_rtu(
+                &mut self.inst,
+                &mut self.transport,
+                self.slave_addr,
+                &mut self.port_obj,
+                self.boudrate,
+                self.parity as mb_port_ser_parity_enum,
+            ) != mb_err_enum_MB_ENOERR {
+                return false;
+            }
+
+            mb_enable(&mut self.inst) == mb_err_enum_MB_ENOERR
         }
     }
 }
