@@ -44,7 +44,7 @@ pub extern "C" fn mb_port_ser_get_byte(
 ) -> BOOL {
     let port = get_serial_interface();
     if let Some(b) = port.get_byte() {
-        unsafe { *byte_buf = b as i8 };
+        unsafe { *byte_buf = b as CHAR };
         TRUE
     } else {
         FALSE
